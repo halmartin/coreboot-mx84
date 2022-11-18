@@ -1,0 +1,12 @@
+--- src/cpu/intel/fsp_model_406dx/microcode_blob.c
++++ src/cpu/intel/fsp_model_406dx/microcode_blob.c
+@@ -23,7 +23,7 @@ unsigned microcode[] = {
+ 		/* Size is 0x14400 - update in microcode_size.h when the file changes */
+ 		#include <microcode-m01406d000e.h>
+ #elif IS_ENABLED(CONFIG_FSP_MODEL_406DX_B0)
+-		/* Size is 0x14800 - update in microcode_size.h when the file changes */
+-		#include <microcode-m01406d811d.h>
++		/* Size is 0x14c00 - update in microcode_size.h when the file changes */
++		#include <microcode-m01406d8128.h>
+ #endif
+ };

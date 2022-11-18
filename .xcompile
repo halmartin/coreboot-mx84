@@ -1,0 +1,23 @@
+# platform agnostic and host tools
+IASL:=/VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/iasl
+HOSTCC:=gcc
+
+# x86 TARCH_SEARCH=  /VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/i386-elf- i386-elf- i386-linux-gnu- i386- /VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/x86_64-elf- x86_64-elf- x86_64-linux-gnu- x86_64-
+# elf32-i386 toolchain (/VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/i386-elf-gcc)
+ARCH_SUPPORTED+=x86_32
+SUBARCH_SUPPORTED+=x86_32
+CC_x86_32:=/VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/i386-elf-gcc
+CFLAGS_x86_32:= -Wno-unused-but-set-variable  -fuse-ld=bfd -fno-stack-protector -Wl,--build-id=none -Wa,--divide  -march=i686
+CPP_x86_32:=/VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/i386-elf-cpp
+AS_x86_32:=/VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/i386-elf-as 
+LD_x86_32:=/VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/i386-elf-ld.bfd 
+NM_x86_32:=/VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/i386-elf-nm
+OBJCOPY_x86_32:=/VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/i386-elf-objcopy
+OBJDUMP_x86_32:=/VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/i386-elf-objdump
+READELF_x86_32:=/VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/i386-elf-readelf
+STRIP_x86_32:=/VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/i386-elf-strip
+AR_x86_32:=/VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/i386-elf-ar
+
+# arm TARCH_SEARCH=  /VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/armv7a-eabi- armv7a-eabi- armv7a-linux-gnu- armv7a- /VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/armv7-a-eabi- armv7-a-eabi- armv7-a-linux-gnu- armv7-a-
+# aarch64 TARCH_SEARCH=  /VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/aarch64-elf- aarch64-elf- aarch64-linux-gnu- aarch64-
+# riscv TARCH_SEARCH=  /VM/proj/Meraki/GRM-1001-MK/coreboot_golden/util/crossgcc/xgcc/bin/riscv-elf- riscv-elf- riscv-linux-gnu- riscv-

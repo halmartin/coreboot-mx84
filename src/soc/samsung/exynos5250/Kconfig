@@ -1,0 +1,90 @@
+config CPU_SAMSUNG_EXYNOS5250
+	select ARCH_BOOTBLOCK_ARMV7
+	select ARCH_ROMSTAGE_ARMV7
+	select ARCH_RAMSTAGE_ARMV7
+	select CPU_HAS_BOOTBLOCK_INIT
+	select HAVE_MONOTONIC_TIMER
+	select HAVE_UART_SPECIAL
+	select DYNAMIC_CBMEM
+	bool
+	default n
+
+if CPU_SAMSUNG_EXYNOS5250
+
+# ROM image layout.
+#
+# 0x0000: vendor-provided BL1 (8k).
+# 0x2000: bootblock
+# 0x9FFC-0xA000: BL2 checksum
+# 0xA000-0xA080: reserved for CBFS master header.
+# 0xA080: Free for CBFS data.
+
+config BOOTBLOCK_ROM_OFFSET
+	hex
+	default 0
+
+config CBFS_HEADER_ROM_OFFSET
+	hex "offset of master CBFS header in ROM"
+	default 0x9F80
+
+config CBFS_ROM_OFFSET
+	# Calculated by BOOTBLOCK_ROM_OFFSET + max bootblock size.
+	hex "offset of CBFS data in ROM"
+	default 0x0A080
+
+config SYS_SDRAM_BASE
+	hex
+	default 0x40000000
+
+# Example SRAM/iRAM map for Exynos5250 platform:
+#
+# 0x0202_0000: vendor-provided BL1
+# 0x0202_3400: bootblock, assume up to 32KB in size
+# 0x0203_0000: romstage, assume up to 128KB in size.
+# 0x0207_8000: stack pointer
+
+config BOOTBLOCK_BASE
+	hex
+	default 0x02023400
+
+config ROMSTAGE_BASE
+	hex
+	default 0x02030000
+
+config RAMSTAGE_BASE
+	hex
+	default SYS_SDRAM_BASE
+
+# Stack may reside in either IRAM or DRAM. We will define it to live
+# at the top of IRAM for now.
+#
+# Stack grows downward, push operation stores register contents in
+# consecutive memory locations ending just below SP
+config STACK_TOP
+	hex
+	default 0x02078000
+
+config STACK_BOTTOM
+	hex
+	default 0x02074000
+
+config STACK_SIZE
+	hex
+	default 0x4000
+
+# TODO We may probably move this to board-specific implementation files instead
+# of KConfig values.
+config CBFS_CACHE_ADDRESS
+	hex "memory address to put CBFS cache data"
+	default 0x0205c000
+
+config CBFS_CACHE_SIZE
+	hex "size of CBFS cache data"
+	default 0x00018000
+
+# TTB needs to be aligned to 16KB.
+config TTB_BUFFER
+	hex "memory address of the TTB buffer"
+	default 0x02058000
+
+endif

@@ -1,0 +1,93 @@
+/*
+ * This file is part of FILO.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+/* When started from General Software BIOS */
+/* BASE_ADDR = 0x40000; */
+/* When started from coreboot */
+BASE_ADDR = 0x100000;          
+
+
+OUTPUT_FORMAT(elf32-i386)
+OUTPUT_ARCH(i386)
+
+ENTRY(entry)
+
+/* 1024KB heap and 64KB stack */
+HEAP_SIZE = 1 * 1024 * 1024;
+STACK_SIZE = 64 * 1024;
+
+SECTIONS
+{
+    . = BASE_ADDR;
+
+    /* Put Multiboot header near beginning of file, if any. */
+    .hdr : { *(.hdr) *(.hdr.*) }
+
+    /* Start of the program. 
+     * Now the version string is in the note, we must include it
+     * in the program. Otherwise we lose the string after relocation. */
+    . = ALIGN(4096);
+    _start = .;
+
+    /* Putting ELF notes near beginning of file might help bootloaders.
+     * We discard .note sections other than .note.ELFBoot and .note.pinfo,
+     * because some versions of GCC generates useless ones. */
+    .note : { *(.note.ELFBoot) *(note.pinfo) }
+
+    /* Normal sections */
+    .boot : { *(.boot) *(.boot.*) }
+    .text : { *(.text) *(.text.*) }
+    .rodata : {
+	. = ALIGN(4);
+	drivers_start = .;
+	*(.rodata.drivers)
+	drivers_end = .;
+	*(.rodata)
+	*(.rodata.*)
+    }
+    .data : { *(.data) *(.data.*) }
+
+    .bss : {
+	*(.sbss)
+	*(.sbss.*)
+	*(.bss)
+	*(.bss.*)
+	*(COMMON)
+
+	/* heap and stack */
+
+	. = ALIGN(16);
+	_heap = .;
+	. += HEAP_SIZE;
+	. = ALIGN(16);
+	_eheap = .;
+
+	_stack = .;
+	. += STACK_SIZE;
+	. = ALIGN(16);
+	_estack = .;
+    }
+
+    .initctx : {
+	/* Initial contents of stack. This MUST BE just after the stack. */
+	*(.initctx)
+    }
+
+    _end = .;
+
+    /DISCARD/ : { *(.comment) *(.note) }
+}

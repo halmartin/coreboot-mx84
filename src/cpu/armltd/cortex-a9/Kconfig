@@ -1,0 +1,16 @@
+config CPU_ARMLTD_CORTEX_A9
+	bool
+	select ARCH_BOOTBLOCK_ARMV7
+	select ARCH_ROMSTAGE_ARMV7
+	select ARCH_RAMSTAGE_ARMV7
+	default n
+
+if CPU_ARMLTD_CORTEX_A9
+
+config BOOTBLOCK_CPU_INIT
+	string
+	default "cpu/armltd/cortex-a9/bootblock.c"
+	help
+	  CPU/SoC-specific bootblock code.
+
+endif

@@ -1,0 +1,115 @@
+config SOC_NVIDIA_TEGRA124
+	select ARCH_BOOTBLOCK_ARMV4
+	select ARCH_ROMSTAGE_ARMV7
+	select ARCH_RAMSTAGE_ARMV7
+	select HAVE_UART_SPECIAL
+	select BOOTBLOCK_CONSOLE
+	select DYNAMIC_CBMEM
+	select ARM_BOOTBLOCK_CUSTOM
+	bool
+	default n
+
+if SOC_NVIDIA_TEGRA124
+
+config BOOTBLOCK_CPU_INIT
+	string
+	default "soc/nvidia/tegra124/bootblock.c"
+	help
+	  CPU/SoC-specific bootblock code. This is useful if the
+	  bootblock must load microcode or copy data from ROM before
+	  searching for the bootblock.
+
+# ROM image layout.
+#
+# 0x00000 Combined bootblock and BCT blob
+# 0x18000 Master CBFS header.
+# 0x18080 Free for CBFS data.
+#
+# iRAM (256k) layout.
+# (Note: The BootROM uses the address range [0x4000_0000:0x4000_E000) itself,
+#  so the bootblock loading address must be placed after that. After the
+#  handoff that area may be reclaimed for other uses, e.g. CBFS cache.)
+#
+# 0x4000_0000 TTB (16KB).
+# 0x4000_4000 CBFS mapping cache (96KB).
+# 0x4001_C000 Stack (16KB... don't reduce without comparing LZMA scratchpad!).
+# 0x4002_0000 Bootblock (max 48KB).
+# 0x4002_C000 ROM stage (max 80KB).
+# 0x4003_FFFF End of iRAM.
+
+config BOOTBLOCK_ROM_OFFSET
+	hex
+	default 0x0
+
+config CBFS_HEADER_ROM_OFFSET
+	hex "offset of master CBFS header in ROM"
+	default 0x18000
+
+config CBFS_ROM_OFFSET
+	hex "offset of CBFS data in ROM"
+	default 0x18080
+
+config SYS_SDRAM_BASE
+	hex
+	default 0x80000000
+
+config BOOTBLOCK_BASE
+	hex
+	default 0x40020000
+
+config ROMSTAGE_BASE
+	hex
+	default 0x4002c000
+
+config RAMSTAGE_BASE
+	hex
+	default 0x80200000
+
+config STACK_TOP
+	hex
+	default 0x40020000
+
+config STACK_BOTTOM
+	hex
+	default 0x4001c000
+
+# This is the ramstage thread stack, *not* the same as above! Currently unused.
+config STACK_SIZE
+	hex
+	default 0x800
+
+# TTB needs to be aligned to 16KB. Stick it in iRAM.
+config TTB_BUFFER
+	hex "memory address of the TTB buffer"
+	default 0x40000000
+
+config CBFS_CACHE_ADDRESS
+	hex "memory address to put CBFS cache data"
+	default 0x40004000
+
+config CBFS_CACHE_SIZE
+	hex "size of CBFS cache data"
+	default 0x00018000
+
+config TEGRA124_MODEL_TD570D
+	bool "TD570D"
+
+config TEGRA124_MODEL_TD580D
+	bool "TD580D"
+
+config TEGRA124_MODEL_CD570M
+	bool "CD570M"
+
+config TEGRA124_MODEL_CD580M
+	bool "CD580M"
+
+# Default to 2GHz, the lowest maximum frequency.
+config PLLX_KHZ
+	int
+	default 2000000 if TEGRA124_MODEL_TD570D
+	default 2300000 if TEGRA124_MODEL_TD580D
+	default 2100000 if TEGRA124_MODEL_CD570M
+	default 2300000 if TEGRA124_MODEL_CD580M
+	default 2000000
+
+endif

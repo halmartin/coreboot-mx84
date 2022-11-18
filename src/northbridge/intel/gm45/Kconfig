@@ -1,0 +1,55 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2009 coresystems GmbH
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+config NORTHBRIDGE_INTEL_GM45
+	bool
+
+if NORTHBRIDGE_INTEL_GM45
+
+config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select HAVE_DEBUG_RAM_SETUP
+	select MMCONF_SUPPORT
+	select MMCONF_SUPPORT_DEFAULT
+	select DYNAMIC_CBMEM
+	select IOMMU
+	select VGA
+	select INTEL_EDID
+	select PER_DEVICE_ACPI_TABLES
+
+config BOOTBLOCK_NORTHBRIDGE_INIT
+	string
+	default "northbridge/intel/gm45/bootblock.c"
+
+config CBFS_SIZE
+	hex "Size of CBFS filesystem in ROM"
+	default 0x100000
+	help
+	  On GM45 systems the firmware image may
+	  store a lot more than just coreboot, including:
+	   - a firmware descriptor
+	   - Intel Management Engine firmware
+	  This option allows to limit the size of the CBFS portion in the
+	  firmware image.
+
+config VGA_BIOS_ID
+	string
+	default "8086,2a42"
+
+endif

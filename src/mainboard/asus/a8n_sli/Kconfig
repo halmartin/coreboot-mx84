@@ -1,0 +1,9 @@
+if BOARD_ASUS_A8N_SLI
+
+# Dummy for abuild
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "A8N-SLI"
+
+endif
