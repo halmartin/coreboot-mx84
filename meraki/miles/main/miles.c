@@ -26,7 +26,7 @@
 static int
 find_itb_config(const void* itb, const char* config_name,
                 const char** kernel_name, const char** ramdisk_name,
-                const char** fdt_name)
+                const char** fdt_name, const char** command_line)
 {
     int len;
 
@@ -72,6 +72,10 @@ find_itb_config(const void* itb, const char* config_name,
         printf("%s: error finding config %s kernel: %s\n",
                 __func__, config_name, fdt_strerror(len));
         return -1;
+    }
+
+    if (command_line) {
+        *command_line = (const char*)fdt_getprop(itb, config_offset, "command-line", &len);
     }
 
     if (ramdisk_name) {
@@ -252,8 +256,9 @@ load_bootkernel(struct miles_buffer* bk, const char* config_name)
     const char* kernel_name = NULL;
     const char* ramdisk_name = NULL;
     const char* fdt_name = NULL;
+    const char* command_line = NULL;
 
-    if (find_itb_config(bk->ptr, config_name, &kernel_name, &ramdisk_name, &fdt_name) < 0) {
+    if (find_itb_config(bk->ptr, config_name, &kernel_name, &ramdisk_name, &fdt_name, &command_line) < 0) {
         printf("%s: Couldn't find config.", __func__);
         return -1;
     }
@@ -295,7 +300,7 @@ load_bootkernel(struct miles_buffer* bk, const char* config_name)
        }
     }
 
-    linux_load(kernel_data, kernel_size, ramdisk_data, ramdisk_size, fdt_data, fdt_size, NULL);
+    linux_load(kernel_data, kernel_size, ramdisk_data, ramdisk_size, fdt_data, fdt_size, command_line);
     printf("Load failed!\n");
 
     return -1;
@@ -314,10 +319,11 @@ main(void)
     if (platform_get_info(&info) < 0)
         fatal("Unable to get bootkernel locations!\n");
 
-    printf("Trying bootkernel 1...\n");
-    load_bootkernel(&info.bootkernels[0], info.itb_config_name);
-    printf("Trying bootkernel 2...\n");
-    load_bootkernel(&info.bootkernels[1], info.itb_config_name);
+    for (int i = 0; i < ARRAY_SIZE(info.bootkernels); i++) {
+        printf("Trying bootkernel %d...\n", i + 1);
+        platform_record_bootkernel(i+1);
+        load_bootkernel(&info.bootkernels[i], info.itb_config_name);
+    }
 
-    fatal("Unable to load either bootkernel!\n");
+    fatal("Unable to load a bootkernel!\n");
 }

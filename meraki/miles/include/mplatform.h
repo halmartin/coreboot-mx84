@@ -35,5 +35,6 @@ struct miles_platform_info
 };
 
 extern int platform_get_info(struct miles_platform_info* info);
+extern void platform_record_bootkernel(int bknum);
 
 #endif
